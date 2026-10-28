@@ -1,0 +1,19 @@
+---
+// Layout para páginas institucionais (Sobre, Privacidade, Termos...)
+import BaseLayout from './BaseLayout.astro';
+interface Props { title: string; description?: string; }
+const { title, description } = Astro.props;
+---
+<BaseLayout title={title} description={description}>
+  <section class="page-hero"><div class="container"><h1>{title}</h1></div></section>
+  <div class="container">
+    <article class="page-box prose"><slot /></article>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-hero { background: linear-gradient(135deg, var(--c-primary), var(--c-primary-2)); padding: 56px 0; }
+  .page-hero h1 { color: #fff; margin: 0; }
+  .page-box { background: #fff; max-width: 820px; margin: -28px auto 40px; padding: 40px; border-radius: var(--radius); box-shadow: var(--shadow); position: relative; }
+  @media (max-width: 600px) { .page-box { padding: 24px; } }
+</style>

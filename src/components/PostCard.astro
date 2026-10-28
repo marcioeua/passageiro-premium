@@ -1,0 +1,44 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORIES } from '../consts';
+import { formatDate, readingTime } from '../utils';
+
+interface Props { post: CollectionEntry<'blog'>; }
+const { post } = Astro.props;
+const { title, description, pubDate, heroImage, category } = post.data;
+---
+<article class="card">
+  <a href={`/blog/${post.id}`} class="thumb" aria-hidden="true" tabindex="-1">
+    {heroImage && <img src={heroImage} alt="" loading="lazy" width="600" height="340" />}
+  </a>
+  <div class="body">
+    <a href={`/categoria/${category}`} class="badge">{CATEGORIES[category] ?? category}</a>
+    <h3><a href={`/blog/${post.id}`}>{title}</a></h3>
+    <p>{description}</p>
+    <div class="meta">
+      <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+      <span>· {readingTime(post.body)}</span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    background: var(--c-surface); border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow); transition: transform .25s, box-shadow .25s;
+    display: flex; flex-direction: column;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+  .thumb {
+    display: block; aspect-ratio: 16/9; overflow: hidden;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-2));
+  }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+  .card:hover .thumb img { transform: scale(1.05); }
+  .body { padding: 20px 22px 24px; display: flex; flex-direction: column; flex: 1; }
+  h3 { margin: .6em 0 .4em; font-size: 1.15rem; }
+  h3 a { color: var(--c-primary); }
+  h3 a:hover { color: var(--c-accent-dark); }
+  p { margin: 0 0 1em; color: var(--c-muted); font-size: .95rem; flex: 1; }
+  .meta { font-size: .8rem; color: var(--c-muted); }
+</style>

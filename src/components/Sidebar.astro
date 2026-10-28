@@ -1,0 +1,59 @@
+---
+import { CATEGORIES } from '../consts';
+import { getPosts } from '../utils';
+import AdSlot from './AdSlot.astro';
+
+const recent = (await getPosts()).slice(0, 5);
+---
+<aside class="sidebar">
+  <div class="widget about">
+    <h4>Sobre o blog</h4>
+    <p>Aqui você aprende a viajar de executiva, acessar salas VIP e acumular milhas sem gastar uma fortuna.</p>
+    <a href="/sobre" class="btn">Conheça</a>
+  </div>
+
+  <AdSlot slot="" format="rectangle" />
+
+  <div class="widget">
+    <h4>Posts recentes</h4>
+    <ul class="recent">
+      {recent.map((p) => (
+        <li>
+          <a href={`/blog/${p.id}`}>
+            {p.data.heroImage && <img src={p.data.heroImage} alt="" width="64" height="64" loading="lazy" />}
+            <span>{p.data.title}</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="widget">
+    <h4>Categorias</h4>
+    <ul class="cats">
+      {Object.entries(CATEGORIES).map(([slug, name]) => (
+        <li><a href={`/categoria/${slug}`}>{name}</a></li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="sticky">
+    <AdSlot slot="" format="vertical" />
+  </div>
+</aside>
+
+<style>
+  .widget { background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; margin-bottom: 28px; }
+  h4 { margin: 0 0 1em; font-size: 1.05rem; padding-bottom: .6em; border-bottom: 2px solid var(--c-bg); }
+  .about p { font-size: .93rem; color: var(--c-muted); }
+  .about .btn { padding: .55em 1.3em; font-size: .88rem; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  .recent li + li { margin-top: 14px; }
+  .recent a { display: flex; gap: 12px; align-items: center; color: var(--c-text); font-size: .92rem; line-height: 1.4; font-weight: 500; }
+  .recent a:hover { color: var(--c-accent-dark); }
+  .recent img { width: 64px; height: 64px; object-fit: cover; border-radius: 8px; flex-shrink: 0; background: var(--c-primary); }
+  .cats li { border-bottom: 1px solid var(--c-bg); }
+  .cats a { display: block; padding: 8px 0; color: var(--c-text); }
+  .cats a::before { content: '›'; color: var(--c-accent); margin-right: 8px; font-weight: 700; }
+  .sticky { position: sticky; top: 120px; }
+</style>

@@ -1,0 +1,81 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import AdSlot from '../components/AdSlot.astro';
+import PostCard from '../components/PostCard.astro';
+import { CATEGORIES, SITE_TITLE } from '../consts';
+import { formatDate, readingTime, getPosts } from '../utils';
+
+interface Props { post: CollectionEntry<'blog'>; }
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, category, author, tags } = post.data;
+
+const related = (await getPosts())
+  .filter((p) => p.id !== post.id && p.data.category === category)
+  .slice(0, 3);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  image: heroImage,
+  datePublished: pubDate.toISOString(),
+  dateModified: (updatedDate ?? pubDate).toISOString(),
+  author: { '@type': 'Person', name: author },
+  publisher: { '@type': 'Organization', name: SITE_TITLE },
+};
+---
+<BaseLayout title={title} description={description} image={heroImage} type="article">
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <header class="post-hero" style={heroImage ? `--bg:url('${heroImage}')` : ''}>
+    <div class="container inner">
+      <a href={`/categoria/${category}`} class="badge">{CATEGORIES[category] ?? category}</a>
+      <h1>{title}</h1>
+      <p class="meta">
+        Por {author} · <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time> · {readingTime(post.body)}
+        {updatedDate && <> · Atualizado em {formatDate(updatedDate)}</>}
+      </p>
+    </div>
+  </header>
+
+  <div class="container layout-sidebar">
+    <div>
+      <article class="post-box prose">
+        <AdSlot slot="" />
+        <slot />
+        <AdSlot slot="" />
+        {tags.length > 0 && (
+          <div class="tags">{tags.map((t) => <span>#{t}</span>)}</div>
+        )}
+      </article>
+
+      {related.length > 0 && (
+        <section class="related">
+          <h2 class="section-title">Leia também</h2>
+          <div class="posts-grid">{related.map((p) => <PostCard post={p} />)}</div>
+        </section>
+      )}
+    </div>
+    <Sidebar />
+  </div>
+</BaseLayout>
+
+<style>
+  .post-hero {
+    position: relative; padding: 90px 0 70px; color: #fff;
+    background: linear-gradient(rgba(15,42,74,.72), rgba(15,42,74,.88)), var(--bg, linear-gradient(135deg, #0f2a4a, #1d4e89));
+    background-size: cover; background-position: center;
+  }
+  .inner { max-width: 900px; text-align: center; }
+  .post-hero h1 { color: #fff; margin: .5em 0 .4em; }
+  .post-hero .badge { background: var(--c-accent); color: var(--c-primary); }
+  .meta { color: #cbd5e0; font-size: .92rem; margin: 0; }
+  .post-box { background: #fff; padding: 40px 44px; border-radius: var(--radius); box-shadow: var(--shadow); }
+  @media (max-width: 600px) { .post-box { padding: 24px 20px; } }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2em; }
+  .tags span { background: var(--c-bg); padding: .3em .9em; border-radius: 999px; font-size: .85rem; color: var(--c-muted); }
+  .related { margin-top: 48px; }
+</style>

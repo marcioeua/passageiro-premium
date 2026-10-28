@@ -1,0 +1,44 @@
+---
+// Bloco de anúncio do Google AdSense.
+// Uso: <AdSlot slot="1234567890" /> — o "slot" é o ID do bloco criado no painel do AdSense.
+import { ADSENSE_CLIENT } from '../consts';
+
+interface Props {
+  slot?: string;
+  format?: 'auto' | 'fluid' | 'rectangle' | 'horizontal' | 'vertical';
+  label?: string;
+}
+const { slot = '', format = 'auto', label = 'Publicidade' } = Astro.props;
+const active = ADSENSE_CLIENT && slot;
+---
+<div class="ad-wrap">
+  <span class="ad-label">{label}</span>
+  {active ? (
+    <>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={ADSENSE_CLIENT}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-full-width-responsive="true"
+      ></ins>
+      <script is:inline>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </>
+  ) : (
+    <div class="ad-placeholder">Espaço para anúncio</div>
+  )}
+</div>
+
+<style>
+  .ad-wrap { margin: 32px 0; text-align: center; }
+  .ad-label {
+    display: block; font-size: .68rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--c-muted); margin-bottom: 6px;
+  }
+  .ad-placeholder {
+    min-height: 120px; display: grid; place-items: center;
+    border: 2px dashed var(--c-border); border-radius: var(--radius);
+    color: var(--c-muted); font-size: .9rem; background: #fff;
+  }
+</style>

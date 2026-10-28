@@ -1,0 +1,35 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { POSTS_PER_PAGE } from '../../consts';
+import { getPosts } from '../../utils';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  return paginate(await getPosts(), { pageSize: POSTS_PER_PAGE });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+---
+<BaseLayout title="Blog" description="Todos os artigos do Passageiro Premium sobre viagens, milhas e conforto.">
+  <section class="list-hero"><div class="container"><h1>Blog</h1><p>Todos os artigos, do mais recente ao mais antigo.</p></div></section>
+  <div class="container layout-sidebar">
+    <div>
+      <div class="posts-grid">{page.data.map((post) => <PostCard post={post} />)}</div>
+      <nav class="pagination" aria-label="Paginação">
+        {page.url.prev && <a href={page.url.prev} class="btn">← Anteriores</a>}
+        <span>Página {page.currentPage} de {page.lastPage}</span>
+        {page.url.next && <a href={page.url.next} class="btn">Próximos →</a>}
+      </nav>
+    </div>
+    <Sidebar />
+  </div>
+</BaseLayout>
+
+<style>
+  .list-hero { background: linear-gradient(135deg, var(--c-primary), var(--c-primary-2)); padding: 56px 0; color: #cbd5e0; }
+  .list-hero h1 { color: #fff; margin: 0 0 .2em; }
+  .list-hero p { margin: 0; }
+  .pagination { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 40px; color: var(--c-muted); }
+</style>

@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { CATEGORIES } from '../../consts';
+import { getPosts } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return Object.keys(CATEGORIES).map((category) => ({
+    params: { category },
+    props: { posts: posts.filter((p) => p.data.category === category) },
+  }));
+}
+
+const { category } = Astro.params;
+const { posts } = Astro.props;
+const name = CATEGORIES[category];
+---
+<BaseLayout title={name} description={`Artigos sobre ${name} no Passageiro Premium.`}>
+  <section class="list-hero">
+    <div class="container"><span class="badge">Categoria</span><h1>{name}</h1></div>
+  </section>
+  <div class="container layout-sidebar">
+    <div>
+      {posts.length > 0
+        ? <div class="posts-grid">{posts.map((post) => <PostCard post={post} />)}</div>
+        : <p>Ainda não há artigos nesta categoria. Volte em breve!</p>}
+    </div>
+    <Sidebar />
+  </div>
+</BaseLayout>
+
+<style>
+  .list-hero { background: linear-gradient(135deg, var(--c-primary), var(--c-primary-2)); padding: 56px 0; }
+  .list-hero h1 { color: #fff; margin: .3em 0 0; }
+  .list-hero .badge { background: var(--c-accent); color: var(--c-primary); }
+</style>
