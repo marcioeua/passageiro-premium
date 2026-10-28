@@ -1,13 +1,13 @@
 ---
-title: 'Roteiro de 5 dias em Lisboa: o que fazer, onde comer e ficar'
-description: 'Um roteiro completo de 5 dias em Lisboa com os principais pontos turísticos, bairros, restaurantes e dicas para economizar.'
+title: 'Roteiro de 5 Dias em Lisboa para Quem Vai pela Primeira Vez'
+description: 'Roteiro de 5 dias em Lisboa para quem vai pela primeira vez, com pontos turísticos, bairros, bate-voltas e dicas para aproveitar a cidade.'
 pubDate: 2026-10-08
 heroImage: 'https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=1200&q=80&auto=format&fit=crop'
 category: 'destinos'
 tags: ['lisboa', 'portugal', 'roteiro', 'europa']
 ---
 
-Lisboa é um dos destinos favoritos dos brasileiros — e não é à toa. Veja um roteiro de 5 dias para aproveitar o melhor da cidade.
+Lisboa é um dos destinos favoritos dos brasileiros, e não é à toa. Se é a sua primeira vez na cidade, este roteiro de 5 dias cobre o essencial sem correria.
 
 ## Dia 1 — Baixa e Chiado
 
