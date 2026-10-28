@@ -1,0 +1,149 @@
+---
+// Calculadora interativa do ALL Accor, usada dentro de posts MDX.
+// Valores de referência: 25 pts/€10 nas marcas padrão, 12,5 pts/€10 em ibis/Mama Shelter,
+// 1 ponto = €0,02 em resgate, Livelo → ALL na paridade 3,5:1.
+---
+<div class="calc" data-accor-calc>
+  <div class="calc-head">
+    <span class="badge">Ferramenta exclusiva</span>
+    <h3>Calculadora Passageiro Premium: quanto rende a sua estadia?</h3>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" class="tab active" data-tab="stay" aria-selected="true">Hospedagem</button>
+    <button type="button" role="tab" class="tab" data-tab="livelo" aria-selected="false">Transferência Livelo</button>
+  </div>
+
+  <div class="panel" data-panel="stay">
+    <div class="grid">
+      <label>Valor da diária (€)
+        <input type="number" min="0" step="1" value="150" data-in="rate" />
+      </label>
+      <label>Noites
+        <input type="number" min="1" step="1" value="3" data-in="nights" />
+      </label>
+      <label>Tipo de hotel
+        <select data-in="brand">
+          <option value="2.5">Novotel, Mercure, Pullman, Sofitel, Fairmont…</option>
+          <option value="1.25">ibis, ibis Styles, Mama Shelter</option>
+        </select>
+      </label>
+      <label>Seu status
+        <select data-in="tier">
+          <option value="0">Classic</option>
+          <option value="0.24">Silver (+24%)</option>
+          <option value="0.48">Gold (+48%)</option>
+          <option value="0.76">Platinum (+76%)</option>
+          <option value="1">Diamond (até +100%)</option>
+        </select>
+      </label>
+      <label class="full">Promoção ativa
+        <select data-in="promo">
+          <option value="1">Nenhuma</option>
+          <option value="2">Pontos em dobro (2X)</option>
+          <option value="3">Pontos em triplo (3X)</option>
+        </select>
+      </label>
+    </div>
+    <div class="result">
+      <div><strong data-out="points">0</strong><span>pontos Reward</span></div>
+      <div><strong data-out="value">€ 0</strong><span>de desconto futuro</span></div>
+      <div><strong data-out="cashback">0%</strong><span>de "cashback" real</span></div>
+    </div>
+  </div>
+
+  <div class="panel" data-panel="livelo" hidden>
+    <div class="grid">
+      <label>Pontos Livelo
+        <input type="number" min="0" step="1000" value="35000" data-in="livelo" />
+      </label>
+      <label>Bônus da campanha (%)
+        <input type="number" min="0" step="5" value="0" data-in="bonus" />
+      </label>
+      <label class="full check">
+        <input type="checkbox" data-in="signature" /> Sou assinante ALL Signature (+10%)
+      </label>
+    </div>
+    <div class="result">
+      <div><strong data-out="allpts">0</strong><span>pontos ALL</span></div>
+      <div><strong data-out="eur">€ 0</strong><span>em diárias</span></div>
+      <div><strong data-out="cpm">€ 0</strong><span>por 1.000 Livelo</span></div>
+    </div>
+  </div>
+
+  <p class="note">Simulação baseada nas regras públicas do programa. Promoções têm regras próprias (algumas calculam o bônus sobre a base Classic) — confira sempre no site oficial.</p>
+</div>
+
+<script>
+  const fmt = (n: number) => Math.round(n).toLocaleString('pt-BR');
+  const eur = (n: number) => '€ ' + n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  document.querySelectorAll<HTMLElement>('[data-accor-calc]').forEach((root) => {
+    const val = (k: string) => {
+      const el = root.querySelector<HTMLInputElement | HTMLSelectElement>(`[data-in="${k}"]`)!;
+      return el instanceof HTMLInputElement && el.type === 'checkbox' ? (el.checked ? 1 : 0) : Number(el.value) || 0;
+    };
+    const out = (k: string, v: string) => (root.querySelector(`[data-out="${k}"]`)!.textContent = v);
+
+    function update() {
+      // Hospedagem: base × (1 + bônus de status) + base × (multiplicador da promoção − 1)
+      const spend = val('rate') * val('nights');
+      const base = spend * val('brand');
+      const points = base * (1 + val('tier')) + base * (val('promo') - 1);
+      const value = points * 0.02;
+      out('points', fmt(points));
+      out('value', eur(value));
+      out('cashback', spend ? ((value / spend) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%' : '0%');
+
+      // Livelo: 3,5 Livelo = 1 ALL, bônus somados
+      const liv = val('livelo');
+      const all = (liv / 3.5) * (1 + val('bonus') / 100 + val('signature') * 0.1);
+      out('allpts', fmt(all));
+      out('eur', eur(all * 0.02));
+      out('cpm', liv ? eur(((all * 0.02) / liv) * 1000) : '€ 0');
+    }
+
+    root.addEventListener('input', update);
+    root.querySelectorAll<HTMLButtonElement>('.tab').forEach((tab) =>
+      tab.addEventListener('click', () => {
+        root.querySelectorAll<HTMLButtonElement>('.tab').forEach((t) => {
+          t.classList.toggle('active', t === tab);
+          t.setAttribute('aria-selected', String(t === tab));
+        });
+        root.querySelectorAll<HTMLElement>('.panel').forEach((p) => (p.hidden = p.dataset.panel !== tab.dataset.tab));
+      })
+    );
+    update();
+  });
+</script>
+
+<style>
+  .calc {
+    margin: 2.2em 0; padding: 28px; border-radius: 14px;
+    background: linear-gradient(135deg, var(--c-primary), var(--c-primary-2)); color: #e2e8f0;
+  }
+  .calc-head h3 { color: #fff; margin: .5em 0 1em; font-size: 1.25rem; }
+  .calc .badge { background: var(--c-accent); color: var(--c-primary); }
+  .tabs { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tab {
+    border: 0; cursor: pointer; padding: .55em 1.2em; border-radius: 999px; font: 600 .9rem var(--font-body);
+    background: rgba(255,255,255,.1); color: #e2e8f0;
+  }
+  .tab.active { background: #fff; color: var(--c-primary); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .full { grid-column: 1 / -1; }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+  label { display: flex; flex-direction: column; gap: 6px; font-size: .85rem; font-weight: 500; }
+  label.check { flex-direction: row; align-items: center; gap: 10px; }
+  input, select {
+    width: 100%; padding: .65em .8em; border-radius: 8px; border: 1px solid rgba(255,255,255,.2);
+    background: rgba(255,255,255,.95); color: var(--c-text); font: 500 .95rem var(--font-body);
+  }
+  input[type='checkbox'] { width: 18px; height: 18px; accent-color: var(--c-accent); }
+  .result { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 20px; }
+  @media (max-width: 560px) { .result { grid-template-columns: 1fr; } }
+  .result div { background: rgba(255,255,255,.08); border-radius: 10px; padding: 14px; text-align: center; }
+  .result strong { display: block; font: 700 1.5rem var(--font-head); color: var(--c-accent); }
+  .result span { font-size: .8rem; }
+  .note { font-size: .78rem; color: #a0aec0; margin: 16px 0 0; }
+</style>
