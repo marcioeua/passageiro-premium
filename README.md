@@ -25,7 +25,6 @@ src/
 └── styles/global.css    # Cores e tipografia (variáveis CSS no :root)
 public/
 ├── ads.txt              # Obrigatório para o AdSense
-└── robots.txt
 ```
 
 ## Novo post
@@ -51,4 +50,9 @@ Conteúdo aqui...
 2. Em `public/ads.txt`, troque `pub-0000000000000000` pelo seu ID.
 3. Crie blocos de anúncio no painel e passe o ID em `<AdSlot slot="1234567890" />`
    (posições: `PostLayout.astro`, `Sidebar.astro`, `index.astro`).
-4. Atualize o domínio em `astro.config.mjs` e `public/robots.txt`.
+
+## Deploy na Vercel e domínio
+
+- Sem domínio próprio: a Vercel usa o endereço `*.vercel.app` automaticamente (sitemap, robots e canonical já saem certos).
+- Com domínio: em **Vercel → Settings → Domains** adicione o domínio e, em **Settings → Environment Variables**,
+  crie `SITE_URL=https://www.seudominio.com.br`. Faça um novo deploy. Nada no código precisa mudar.
