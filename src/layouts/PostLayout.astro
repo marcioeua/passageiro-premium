@@ -74,7 +74,10 @@ const jsonLd = {
   .post-hero .badge { background: var(--c-accent); color: var(--c-primary); }
   .meta { color: #cbd5e0; font-size: .92rem; margin: 0; }
   .post-box { background: #fff; padding: 40px 44px; border-radius: var(--radius); box-shadow: var(--shadow); }
-  @media (max-width: 600px) { .post-box { padding: 24px 20px; } }
+  @media (max-width: 600px) {
+    .post-box { padding: 24px 18px; }
+    .post-hero { padding: 56px 0 44px; }
+  }
   .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2em; }
   .tags span { background: var(--c-bg); padding: .3em .9em; border-radius: 999px; font-size: .85rem; color: var(--c-muted); }
   .related { margin-top: 48px; }
